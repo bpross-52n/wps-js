@@ -135,7 +135,11 @@ var ExecuteResponse = BaseResponse.extend({
 				var started = status[0].getElementsByTagNameNS(WPS_100_NAMESPACE, "ProcessStarted");
 				if (started && started.length > 0) {
 					var percent = started[0].getAttribute("percentCompleted");
-					statusText = "Process started (" + percent + " % complete)";	
+					if(percent != null){
+					    statusText = "Process started (" + percent + " % complete)";
+				    }else{
+				    	statusText = started[0].childNodes[0].nodeValue;
+				    }
 				}
 			}
 			//process paused
