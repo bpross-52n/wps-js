@@ -15,6 +15,7 @@ var TEMPLATE_EXECUTE_RESPONSE_MARKUP = '\
 			<ul class="wps-execute-response-list" id="wps-execute-response-list"> \
 				<li class="wps-execute-response-list-entry"> \
 					<label class="wps-item-label">Created on </label><span class="wps-item-value">${creationTime}</span></li> \
+                    <label class="wps-item-label">Duration </label><span class="wps-item-value">${endTime}</span></li> \
 			</ul> \
 		</div> \
 		<div id="wps-execute-response-extension"></div> \
@@ -123,6 +124,28 @@ var ExecuteResponse = BaseResponse.extend({
 		var processFailed = false;
 		var processSucceeded = false;
 		
+		var time = status[0].getAttribute("creationTime");
+		
+		var duration;
+		
+		var startTime;
+		
+		var endTime;
+		
+		if (time) {			
+		    startTime = new Date(time);
+		    
+		    time = d.toLocaleString();
+		    
+		    if(!processSucceeded){
+			    var now = new Date();
+			    duration = Math.abs(now - startTime);
+			}  
+		}
+		
+        //const now = new Date();        
+        //var endTime = now.getTime();
+		
 		if (process && process[0] && status && status[0]) {
 			var identifier = jQuery(process[0].getElementsByTagNameNS(OWS_11_NAMESPACE, "Identifier")).text();
 			var title = jQuery(process[0].getElementsByTagNameNS(OWS_11_NAMESPACE, "Title")).text();	
@@ -154,6 +177,7 @@ var ExecuteResponse = BaseResponse.extend({
 						extensions = jQuery.extend(this.resolveProcessOutputs(processOutputs[0]), extensions);	
 					}
 					processSucceeded = true;
+					
 				}
 			}
 			//process failed
@@ -171,12 +195,6 @@ var ExecuteResponse = BaseResponse.extend({
 				}
 			}
 			
-			var time = status[0].getAttribute("creationTime");	
-			if (time) {
-			    var d = new Date(time);
-			    time = d.toLocaleString();
-			}
-			
 			var updateSwitch;
 			if (this.originalRequest.updateSwitch) {
 				updateSwitch = '';
@@ -189,6 +207,7 @@ var ExecuteResponse = BaseResponse.extend({
 					identifier : identifier,
 					title : title,
 					creationTime : time,
+					endTime: duration,
 					updateSwitchEnabled : updateSwitch
 			};
 		}
