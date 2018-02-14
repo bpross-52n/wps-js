@@ -15,7 +15,7 @@ var TEMPLATE_EXECUTE_RESPONSE_MARKUP = '\
 			<ul class="wps-execute-response-list" id="wps-execute-response-list"> \
 				<li class="wps-execute-response-list-entry"> \
 					<label class="wps-item-label">Created on </label><span class="wps-item-value">${creationTime}</span></li> \
-                    <label class="wps-item-label">Duration </label><span class="wps-item-value">${endTime}</span></li> \
+                    <label class="wps-item-label">Duration </label><span class="wps-item-value">${endTime} seconds</span></li> \
 			</ul> \
 		</div> \
 		<div id="wps-execute-response-extension"></div> \
@@ -49,6 +49,8 @@ var TEMPLATE_EXECUTE_RESPONSE_STATUS_FAILED_MARKUP = '\
 	<li class="wps-execute-response-list-entry"> \
 			<label class="wps-item-label">Message</label><span class="wps-item-error-message-value">${message}</span> \
 	</li>';
+
+var duration;
 
 var ExecuteResponse = BaseResponse.extend({
 	
@@ -126,8 +128,6 @@ var ExecuteResponse = BaseResponse.extend({
 		
 		var time = status[0].getAttribute("creationTime");
 		
-		var duration;
-		
 		var startTime;
 		
 		var endTime;
@@ -135,12 +135,7 @@ var ExecuteResponse = BaseResponse.extend({
 		if (time) {			
 		    startTime = new Date(time);
 		    
-		    time = d.toLocaleString();
-		    
-		    if(!processSucceeded){
-			    var now = new Date();
-			    duration = Math.abs(now - startTime);
-			}  
+		    time = startTime.toLocaleString();
 		}
 		
         //const now = new Date();        
@@ -176,8 +171,7 @@ var ExecuteResponse = BaseResponse.extend({
 					if (processOutputs && processOutputs.length > 0) {
 						extensions = jQuery.extend(this.resolveProcessOutputs(processOutputs[0]), extensions);	
 					}
-					processSucceeded = true;
-					
+					processSucceeded = true;					
 				}
 			}
 			//process failed
@@ -193,6 +187,11 @@ var ExecuteResponse = BaseResponse.extend({
 					}
 					processFailed = true;
 				}
+			}
+		    
+		    if(!processSucceeded){
+			    var now = new Date();
+			    duration = Math.abs(now - startTime) / 1000;
 			}
 			
 			var updateSwitch;
